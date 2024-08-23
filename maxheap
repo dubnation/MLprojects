@@ -1,0 +1,71 @@
+import java.util.*;
+public class MaxHeap<T> {
+    private T[] skeleton;
+    private int nextNum;
+    private Comparator<T> comparator;
+    public MaxHeap(int size, Comparator<T> comparator) {
+        this.comparator = comparator;
+        this.skeleton = (T[]) new Object[size + 1];
+        this.skeleton[0] = null;
+        this.nextNum = 1;
+    }
+
+    public int parent(int index) {
+        if (index == 1) {
+            return 1;
+        } else {
+            return index/2;
+        }
+    }
+    
+    public void promote(int index) {
+        if (comparator.compare(skeleton[parent(index)], skeleton[index]) < 0) {
+            swap(index, parent(index));
+            promote(parent(index));
+        }
+    }
+
+    public void insert(T item) {
+        skeleton[nextNum] = item;
+        promote(nextNum);
+        nextNum += 1;
+    }
+
+    public void swap(int index1, int index2) {
+        T copyItem = skeleton[index1];
+        skeleton[index1] = skeleton[index2];
+        skeleton[index2] = copyItem;
+    }
+
+    public void demote(int index) {
+        T left = skeleton[index * 2];
+        T right = skeleton[index * 2 + 1];
+        T swapper;
+        if (left == null || right == null) {
+            return;
+        }
+        else if (comparator.compare(left, right) < 0) {
+            swapper = right;
+        } else {
+            swapper = left;
+        }
+        if (comparator.compare(skeleton[index], swapper) < 0) {
+            swap(index * 2, index);
+            demote(index * 2);
+        }
+    }
+    public T removeMax() {
+        T maxItem = skeleton[1];
+        skeleton[1] = skeleton[nextNum - 1];
+        skeleton[nextNum - 1] = null;
+        nextNum -= 1;
+
+        demote(1);
+        return maxItem;
+    }
+
+    public static void main(String[] args) {
+        System.out.println("Hello World");
+    }
+
+}
